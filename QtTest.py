@@ -9,7 +9,7 @@
 import tkinter
 from tkinter import Label
 
-from JsonTest import JsonWriter
+from JsonWriter import JsonWriter
 
 
 class MyUI:
