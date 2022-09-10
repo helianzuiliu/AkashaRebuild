@@ -1,3 +1,9 @@
+#  Copyright (c) 2022. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+#  Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+#  Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+#  Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+#  Vestibulum commodo. Ut rhoncus gravida arcu.
+
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Time : 2022/9/1 21:00
@@ -7,33 +13,39 @@
 # @Software: PyCharm
 
 import tkinter
-from tkinter import Label
+from tkinter import ttk
+from tkinter import filedialog
 
 from JsonWriter import JsonWriter
 
 
-class MyUI:
-    def __init__(self, init_windows_name: tkinter.Tk, wight, high, x_offset, y_offset):
-        self.init_windows_name = init_windows_name
-        self.wight = wight
-        self.high = high
-        self.x_offset = x_offset
-        self.y_offset = y_offset
-        pass
+class UIController:
+    def __init__(self, master):
+        # property set
+        self.master = master
+        self.is_open_file = False
 
-    def set_windows_attribute(self):
-        """
-		设置窗口属性
-		"""
-        self.init_windows_name.title("剧情文本生成工具")
-        self.init_windows_name.geometry(
-            "{0}x{1}+{2}+{3}".format(str(self.wight), str(self.high), str(self.x_offset), str(self.y_offset)))
+        # widgets set
+        self.label_total = ttk.Label(self.master, text="标题", font=("微软雅黑", 20))  # 统计信息
+        self.left_image = ttk.Label(self.master, image=None)  # 左边的人物图片
+        self.mid_image = ttk.Label(self.master, image=None)  # 中间的人物图片
+        self.right_image = ttk.Label(self.master, image=None)  # 右边的人物图片
+        self.label_Name = ttk.Entry(self.master)  # 人物的名字
+        self.button_Next = ttk.Button(self.master, text="输入下一句文本")  # 进入下一文本的按钮
+        self.button_Save = ttk.Button(self.master, text="保存", command=self.Click_Save)  # 保存按钮，将内容保存到json文件中
+        # 写出左中右三个图片，一个写名字的输入框，一个头像框，和一个写剧情的输入框，一个标记当前文本行数和总计文本行数的文本框，还有保存按钮绑定json文件路径，一个
 
-        self.init_windows_name.attributes("-alpha", 0.8)  # 窗口背景透明度
+        # widgets place
+        self.label_total.grid()
+        self.left_image.grid()
+        self.mid_image.grid()
+        self.right_image.grid()
+        self.button_Next.grid()
+        self.button_Save.grid()
 
+    def Click_Save(self):
+        print(filedialog.askopenfile(title="保存路径", initialdir="./"))
 
-def Button_Click(label: Label):
-    print(123)
 
 
 def DataOutput(obj_list):
@@ -42,18 +54,14 @@ def DataOutput(obj_list):
 
 
 def main():
-    init_window = tkinter.Tk()
+    master = tkinter.Tk()
 
-    ui = MyUI(init_window, 800, 600, 100, 100)
-    ui.set_windows_attribute()
+    master.title("剧情文本编辑器")
+    master.geometry("800x600+100+100")
 
-    label: Label = tkinter.Label(init_window, text="123")
-    label.pack()
+    UIController(master)
 
-    button = tkinter.Button(init_window, text="Button1", width=15, height=2, command=Button_Click(label))
-    button.pack()
-
-    init_window.mainloop()
+    master.mainloop()
 
 
 if __name__ == '__main__':
