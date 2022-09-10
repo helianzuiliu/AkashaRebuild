@@ -30,27 +30,34 @@ class UIController:
         self.left_image = ttk.Label(self.master, image=None)  # 左边的人物图片
         self.mid_image = ttk.Label(self.master, image=None)  # 中间的人物图片
         self.right_image = ttk.Label(self.master, image=None)  # 右边的人物图片
-        self.label_Name = ttk.Entry(self.master)  # 人物的名字
-        self.button_Next = ttk.Button(self.master, text="输入下一句文本")  # 进入下一文本的按钮
-        self.button_Save = ttk.Button(self.master, text="保存", command=self.Click_Save)  # 保存按钮，将内容保存到json文件中
-        # 写出左中右三个图片，一个写名字的输入框，一个头像框，和一个写剧情的输入框，一个标记当前文本行数和总计文本行数的文本框，还有保存按钮绑定json文件路径，一个
+        # 人物头像框
+        self.entry_name = ttk.Entry(self.master)  # 写人物名字的输入框
+        self.entry_text = ttk.Entry(self.master)  # 写剧情的输入框
+        self.button_next = ttk.Button(self.master, text="输入下一句文本")  # 进入下一文本的按钮
+        self.button_save = ttk.Button(self.master, text="保存", command=self.Click_Save)  # 保存按钮，将内容保存到json文件中
+        # 读取按钮
+        # 一个头像框，下一行文本的按钮,读取json文件的读取按钮
 
         # widgets place
         self.label_total.grid()
         self.left_image.grid()
         self.mid_image.grid()
         self.right_image.grid()
-        self.button_Next.grid()
-        self.button_Save.grid()
+        self.entry_name.grid()
+        self.button_next.grid()
+        self.button_save.grid()
 
-    def Click_Save(self):
-        print(filedialog.askopenfile(title="保存路径", initialdir="./"))
-
-
-
-def DataOutput(obj_list):
-    with open(JsonWriter.GetFilePath(), 'w', encoding="UTF-8") as file:
-        JsonWriter.JsonWriteWithListObj(obj_list, file)
+    @staticmethod
+    def Click_Save(list_obj):
+        """
+        :param list_obj: 写有DialogStruct对象的列表
+        :return:
+        """
+        path = filedialog.askopenfile(title="保存路径", initialdir="./")
+        with open(path, 'w', encoding="UTF-8") as file:
+            JsonWriter.JsonWriteWithListObj(list_obj, file)
+            print("Json write success!")
+            file.close()
 
 
 def main():
