@@ -13,10 +13,21 @@ def GetImage(path, width, height):
     return ImageTk.PhotoImage(im)
 
 
-a = "F:\\幻书启世录\\物料资源\\BG CG\\"
-images = os.listdir(a)
-image_dict = {}
-for image in images:
-    # b=GetImage(a + image, 800, 600)
-    # image_dict[image] = b #  我麻了
-    print(a + image)
+def GetThisDir():
+    return os.path.abspath(".")
+
+
+def GetImageNameInFile():
+    """
+    :rtype: list
+    """
+    return os.listdir(GetThisDir() + "\\Image")
+
+
+def main():
+    print(GetImageNameInFile())
+    print(GetImageNameInFile().__len__())
+
+
+if __name__ == '__main__':
+    main()

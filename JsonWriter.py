@@ -14,6 +14,7 @@
 
 import json
 import os.path
+from PIL import ImageTk, Image
 
 
 class JsonWriter:
@@ -30,11 +31,10 @@ class JsonWriter:
     }
 
     @staticmethod
-    def GetFilePath():
+    def GetFilePath(file_name: str):
         """
-        :return: 获取文件的绝对路径
+        :return: 获取当前目录的绝对路径
         """
-        file_name: str = input(" 输入文件名字:")
         return os.path.abspath("./" + file_name + ".json")
 
     @staticmethod
@@ -47,10 +47,10 @@ class JsonWriter:
         fp.write(json.dumps(obj, indent=4, ensure_ascii=False))
 
     @staticmethod
-    def JsonWriteWithListObj(obj_list: list, fp):
+    def JsonWriteWithListObj(fp, obj_list: list):
         """
-        :param obj_list:
         :param fp:
+        :param obj_list:
         :return:
         """
         with fp as file:
