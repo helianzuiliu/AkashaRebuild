@@ -12,6 +12,7 @@
 # @File : QtTest.py
 # @Software: PyCharm
 import tkinter
+from this import d
 from tkinter import Tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -30,17 +31,22 @@ class UIController:
 		self.history_list.geometry("{0}x{1}+{2}+{3}".format(400, 600, 900, 100))
 
 		# property set
-		self.line = 1
-		self.list_obj = []
 		self.width = width
 		self.height = height
-		self.im = Mymethod.GetThisDir() + "\\image\\" + "人间词话立绘.png"
+
+		self.dialog_list = []
+
+		self.line_now = 1
+		self.line_total = 1
+
+		self.images_obj = []
+		self.left_image = None
+		self.mid_image = None
+		self.right_image = None
+
 		self.character_images: list = Mymethod.GetImageNameInFile()
 
 		self.im_label = Mymethod.GetImage("F:\\幻书启世录\\物料资源\\BG CG\\IMG (3).png", self.width, self.height)
-		self.left_image = Mymethod.GetImage(self.im, 768, 768)
-		self.mid_image = Mymethod.GetImage(self.im, 768, 768)
-		self.right_image = Mymethod.GetImage("D:\\程序语言的学习工程\\python\\image\\元素周期表立绘.png", 768, 768)
 
 		self.have_actor_var = tkinter.StringVar(value="0")
 
@@ -92,10 +98,6 @@ class UIController:
 		self.label_total.place(x=355, y=30, width=240, height=40)  # 统计信息
 		self.combobox_dialog_type.place(x=40, y=30, width=120, height=40)  # 这句话的类型
 
-		self.canvas_image.create_image(-200, -100, anchor="nw", image=self.left_image, tag="l_image")  # 左边的人物图片
-		self.canvas_image.create_image(150, -100, anchor="nw", image=self.mid_image, tag="m_image")  # 左边的人物图片
-		self.canvas_image.create_image(450, -100, anchor="nw", image=self.right_image, tag="r_image")  # 左边的人物图片
-
 		self.combobox_left_image.place(x=100, y=70, width=120, height=30)  #
 		self.combobox_mid_image.place(x=365, y=70, width=120, height=30)  #
 		self.combobox_right_image.place(x=630, y=70, width=120, height=30)  #
@@ -104,7 +106,7 @@ class UIController:
 		self.entry_name.place(x=210, y=320, width=240, height=40)  # 写人物名字的输入框
 		self.text_dialog.place(x=210, y=360, width=650, height=160)  # 写剧情的输入框
 
-		# self.button_next.place(x=790, y=30, width=120, height=40)  # 进入下一文本的按钮
+		self.button_next.place(x=790, y=30, width=120, height=40)  # 进入下一文本的按钮
 
 		# history_list widgets place
 		self.button_save.place(x=0, y=0, width=10, height=10)  # 保存按钮
@@ -118,11 +120,10 @@ class UIController:
 		path = filedialog.asksaveasfilename(title="保存路径", initialdir="./")
 		if path != "":
 			with open(path, 'w', encoding="UTF-8") as file:
-				JsonWriter.JsonWriteWithListObj(file, self.list_obj)
+				JsonWriter.JsonWriteWithListObj(file, self.images_obj)
 				print("Json write success!")
 				file.close()
 				print(123)
-
 	# 这个函数能用，但是逻辑没有完善，容易出bug
 
 	def Click_Load(self):
@@ -131,20 +132,30 @@ class UIController:
 		"""
 
 	def Click_Test(self):
-		self.canvas_image.delete("m_image")
+		print(self.text_dialog.get(1.1, "end"))
 
 	def Click_Next(self):
-		self.line += 1
-		self.label_total["text"] = self.line
+		self.line_now += 1
+		if self.line_now > self.line_total:
+			self.line_total += 1
+		text = "当前第" + str(self.line_now) + "句,总共有" + str(self.line_total) + "句"
+		self.label_total["text"] = text
 
 	def Make_Dialog(self):
 		"""
 		:return:
 		"""
 		dialog = JsonWriter.DialogStruct
-		dialog["Name"] = self.line
+		dialog["Name"] = self.line_now
 		dialog["Next"] = self.combobox_dialog_type.get()
 		dialog["CharacterName"] = self.entry_name.get()
+		# dialog["CharacterImage"]=
+		dialog["DialogText"] = self.text_dialog.get(0)
+		dialog["选项"] = []
+		dialog["左侧人物图像"] = self.ImageFileGet(1)
+		dialog["中间人物图像"] = self.ImageFileGet(2)
+		dialog["右侧人物图像"] = self.ImageFileGet(3)
+		self.dialog_list.insert(self.line_now, dialog)
 
 	# dialog["CharacterImage"]=
 
@@ -158,10 +169,12 @@ class UIController:
 	# else:
 	# 	self.actor_image["state"] = "normal"
 
-	def DialogTypeChange(self):
+	def DialogTypeChange(self, event):
 		"""
-		:return:
+		:rtype: None
 		"""
+		if self.combobox_dialog_type.get() == "继续对话":
+			pass
 
 	def L_ImageChange(self, event):
 		"""
@@ -192,6 +205,14 @@ class UIController:
 		self.right_image = Mymethod.GetImage(image_path, 768, 768)
 		self.canvas_image.delete("r_image")
 		self.canvas_image.create_image(450, -100, anchor="nw", image=self.right_image, tag="r_image")
+
+	def ImageFileGet(self, index: int):
+		"""
+		:rtype: str
+		"""
+		# 利用输入的index读取不同的输入框中的数据,并将其与UE的文件路径进行对应转化,并返回
+		if index == 1:
+			self.combobox_left_image.get()
 
 
 def main():

@@ -23,6 +23,14 @@ def GetImageNameInFile():
     """
     return os.listdir(GetThisDir() + "\\Image")
 
+def TranImageFileToUE(image_name):
+    """
+    将输入的路径转换成UE的文件路径
+
+    :param image_name: 输入的图片名,一般情况下的格式是 {幻书名字}.png
+    :return: 对应的UE文件索引
+    :rtype: str
+    """
 
 def main():
     print(GetImageNameInFile())
