@@ -20,6 +20,7 @@ class JsonWriter:
 	DialogStruct: dict = {
 		"Name": 0,
 		"Next": "继续对话",
+		"BackgroundImage": "None",
 		"CharacterName": "None",
 		"CharacterImage": "None",
 		"DialogText": "",
@@ -41,7 +42,6 @@ class JsonWriter:
 		"""
 		:param fp:
 		:param obj:
-		:return:
 		"""
 		fp.write(json.dumps(obj, indent=4, ensure_ascii=False))
 
@@ -50,7 +50,6 @@ class JsonWriter:
 		"""
 		:param fp:
 		:param obj_list:
-		:return:
 		"""
 		with fp as file:
 			json.dump(obj_list, file, indent=4, ensure_ascii=False)
@@ -60,6 +59,7 @@ class JsonWriter:
 		"""
 		:param fp: 输入的文件对象
 		:return: 返回读取到的数据，一般为列表
+		:rtype: list
 		"""
 		return json.load(fp)
 
@@ -68,6 +68,7 @@ class JsonWriter:
 		"""
 		:param obj:
 		:return:
+		:rtype: str
 		"""
 		# 这边没看懂出什么问题了,暂时不能用
 		if type(obj) is str:

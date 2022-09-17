@@ -17,25 +17,27 @@ def GetThisDir():
     return os.path.abspath(".")
 
 
-def GetImageNameInFile():
+def GetImageNameInFile(file_name: str):
     """
     :rtype: list
     """
-    return os.listdir(GetThisDir() + "\\Image")
+    return os.listdir(GetThisDir() + "\\" + file_name)
 
-def TranImageFileToUE(image_name):
+
+def TransImageFileToUE(image_name, index: int):
     """
     将输入的路径转换成UE的文件路径
 
-    :param image_name: 输入的图片名,一般情况下的格式是 {幻书名字}.png
-    :return: 对应的UE文件索引
+    :param image_name: 输入的图片名,一般情况下的格式是 {图片名字}.png
+    :param index: 根据index不同返回不同的文件路径
+    :return: 对应的UE文件
     :rtype: str
     """
-
-def main():
-    print(GetImageNameInFile())
-    print(GetImageNameInFile().__len__())
-
-
-if __name__ == '__main__':
-    main()
+    if image_name == '':
+        return "None"
+    if index == 0:
+        return "Game\\DialogSystem\\BackgroundImage\\" + image_name
+    elif index == 1:
+        return "Game\\DialogSystem\\CharacterImage\\" + image_name
+    else:
+        return "Game\\DialogSystem\\AvatarImage\\" + image_name
