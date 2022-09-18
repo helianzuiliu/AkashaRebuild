@@ -12,17 +12,14 @@ def GetImage(path, width, height):
     im = Image.open(path).resize((width, height))
     return ImageTk.PhotoImage(im)
 
-
 def GetThisDir():
     return os.path.abspath(".")
-
 
 def GetImageNameInFile(file_name: str):
     """
     :rtype: list
     """
     return os.listdir(GetThisDir() + "\\" + file_name)
-
 
 def TransImageFileToUE(image_name, index: int):
     """

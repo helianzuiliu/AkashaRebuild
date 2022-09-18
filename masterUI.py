@@ -9,8 +9,9 @@
 # @Time : 2022/9/1 21:00
 # @Author : 赫连醉柳
 # @Email : 1273103690@qq.com
-# @File : QtTest.py
+# @File : masterUI.py
 # @Software: PyCharm
+
 import tkinter
 from tkinter import ttk
 from tkinter import filedialog
@@ -49,7 +50,7 @@ class UIController:
 		self.list_avatar: list = Mymethod.GetImageNameInFile("avatar")
 		self.list_avatar.append("")
 
-		# 所有正在使用的图片的引用
+		# 所有使用的图片的引用
 		self.image_background = None
 		self.image_left = None
 		self.image_mid = None
@@ -59,7 +60,7 @@ class UIController:
 		# 用于获取CheckButton的内容的容器
 		self.have_avatar_var = tkinter.IntVar(value=1)
 
-		# 初始化所有控件
+		"""初始化所有控件"""
 		self.canvas_image = tkinter.Canvas(self.master, width=self.width, height=self.height)  # 背景图片
 
 		self.label_total = ttk.Label(self.master, text="标题", font=("微软雅黑", 16))  # 统计信息
@@ -83,22 +84,23 @@ class UIController:
 		self.combobox_avatar_image = ttk.Combobox(master=self.master, font=("微软雅黑", 10), state='readonly',
 		                                          values=self.list_avatar)  # 对话框的头像
 
-		# self.label_avatar = ttk.Label(self.master, image=self.image_avatar)
-
-		# 剧情的文本内容
+		# 剧情文本的内容
 		self.entry_name = ttk.Entry(self.master, font=("微软雅黑", 16))  # 写人物名字的输入框
-		self.text_dialog = tkinter.Text(self.master, font=("微软雅黑", 16))  # 写剧情的输入框\
+		self.text_dialog = tkinter.Text(self.master, font=("微软雅黑", 16))  # 写剧情的输入框
 
 		self.entry_choice1 = ttk.Entry(self.master, font=("微软雅黑", 16))
 		self.entry_choice2 = ttk.Entry(self.master, font=("微软雅黑", 16))
 
 		self.button_next = ttk.Button(self.master, text="输入下一句文本", command=self.Click_Next)  # 进入下一文本的按钮
 		self.button_history = ttk.Button(self.master, text="历史", command=self.HistoryWindowCreate)
+		self.button_test = ttk.Button(self.master, text="TestButton", command=self.Click_Test)  # 测试按钮
+
 		"""放在history_list窗口的控件"""
 		self.button_save = ttk.Button()  # 保存按钮
 		self.button_load = ttk.Button()  # 读取按钮
 
-		self.button_test = ttk.Button(self.master, text="TestButton", command=self.Click_Test)  # 测试按钮
+		# 展示每一句文本的竖直框
+		self.scrollbox_history = ttk.Scrollbar(self.master, )
 
 		self.EventBind()
 		self.WidgetsPlace()
@@ -142,38 +144,39 @@ class UIController:
 
 	def Click_Save(self):
 		"""
-		todo 这个函数能用，但是逻辑没有完善，容易出bug
-		:return:
+		将dialog_list存入文件中
 		"""
-		path = filedialog.asksaveasfilename(title="保存路径", initialdir="./")
-		if path != "":
-			with open(path, 'w', encoding="UTF-8") as file:
-				JsonWriter.JsonWriteWithListObj(file, self.dialog_list)
-				print("Json write success!")
-				file.close()
+		file = filedialog.asksaveasfile(title="保存路径", initialdir="./", filetypes=[('All Files', '*')],
+		                                defaultextension='json')
+		if file:
+			JsonWriter.JsonWriteWithListObj(file, self.dialog_list)
+			print("Json write success!")
+			file.close()
 
 	def Click_Load(self):
 		"""
-		todo 欸，才写一点呢,还不知道能不能用
-		联动剧情总览列表,将读取到的数据返回到总览列表
+		从json文件中读取数据
 		"""
-		path = filedialog.asksaveasfilename(title="保存路径", initialdir="./")
-		if path != "":
-			with open(path, 'r', encoding="UTF-8") as file:
-				self.dialog_list = JsonWriter.JsonLoadByFile(file)
-				file.close()
+		file = filedialog.askopenfile(title="保存路径", initialdir="./",
+		                              filetypes=[('json文件', 'json'), ('All Files', '*')])
+		if file:
+			self.dialog_list = JsonWriter.JsonLoadByFile(file)
+			file.close()
 
 	def Click_Test(self):
+		"""
+		"""
 		for i in self.dialog_list:
 			print(i)
 
 	def Click_Next(self):
-		self.line_now += 1
-		if self.line_now > self.line_total:
-			self.line_total += 1
 		text = "当前第" + str(self.line_now) + "句,总共有" + str(self.line_total) + "句"
 		self.label_total["text"] = text
 		self.dialog_list.insert(self.line_now, self.Make_Dialog())
+
+		self.line_now += 1
+		if self.line_now > self.line_total:
+			self.line_total += 1
 
 	def Make_Dialog(self):
 		"""
@@ -181,7 +184,7 @@ class UIController:
 		:return: 返回整理完成的对话结构体
 		"""
 		dialog_struct = JsonWriter.DialogStruct
-		dialog_struct["Name"] = self.line_now
+		dialog_struct["Name"] = self.line_now - 1
 		dialog_struct["Next"] = self.combobox_dialog_type.get()
 
 		dialog_struct["BackgroundImage"] = self.ImageFileGet(0)
@@ -370,6 +373,12 @@ class UIController:
 		self.canvas_image.delete('m_image')
 		self.canvas_image.delete('r_image')
 		self.canvas_image.delete('a_image')
+
+	def HistoryListUpdate(self):
+		"""
+		"""
+		for dialog in self.dialog_list:
+			pass
 
 
 def main():
