@@ -15,10 +15,10 @@
 import tkinter
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter import messagebox
 
-from JsonWriter import JsonWriter
+from PythonScript.JsonWriter import JsonWriter
 import Mymethod
-
 
 class UIController:
 	def __init__(self, master: tkinter.Tk, width, height):
@@ -38,14 +38,14 @@ class UIController:
 		self.height = height
 
 		self.line_now: int = 1
-		self.line_total = 1
+		self.line_total: int = 1
 
-		self.dialog_list = []
+		self.list_dialog = []
 
 		# 需要的所有图片资源
 		self.list_background: list = Mymethod.GetImageNameInFile("background")
 		self.list_background.append("")
-		self.list_character: list = Mymethod.GetImageNameInFile("image")
+		self.list_character: list = Mymethod.GetImageNameInFile("Image")
 		self.list_character.append("")
 		self.list_avatar: list = Mymethod.GetImageNameInFile("avatar")
 		self.list_avatar.append("")
@@ -63,7 +63,8 @@ class UIController:
 		"""初始化所有控件"""
 		self.canvas_image = tkinter.Canvas(self.master, width=self.width, height=self.height)  # 背景图片
 
-		self.label_total = ttk.Label(self.master, text="标题", font=("微软雅黑", 16))  # 统计信息
+		self.label_total = ttk.Label(self.master, text="当前第{}句,总共{}句".format(self.line_now, self.line_total),
+		                             font=("微软雅黑", 16))  # 统计信息
 
 		self.combobox_dialog_type = ttk.Combobox(master=self.master, font="微软雅黑", state='readonly',
 		                                         values=["继续对话", "黑屏独白", "选项", "结束对话"])  # 这句话的类型
@@ -98,9 +99,10 @@ class UIController:
 		"""放在history_list窗口的控件"""
 		self.button_save = ttk.Button()  # 保存按钮
 		self.button_load = ttk.Button()  # 读取按钮
+		self.button_read = ttk.Button()  # 跳转
 
-		# 展示每一句文本的竖直框
-		self.scrollbox_history = ttk.Scrollbar(self.master, )
+		self.listbox_history_slot = tkinter.Listbox()  # 列表框
+		self.scrollbar_history = ttk.Scrollbar()  # 滚动条
 
 		self.EventBind()
 		self.WidgetsPlace()
@@ -142,41 +144,108 @@ class UIController:
 
 		self.button_test.place(x=760, y=320, width=100, height=40)  # 功能测试按钮
 
+	def LabelTotalUpdate(self):
+		text = "当前第" + str(self.line_now) + "句,总共有" + str(self.line_total) + "句"
+		self.label_total["text"] = text
+
 	def Click_Save(self):
 		"""
 		将dialog_list存入文件中
 		"""
-		file = filedialog.asksaveasfile(title="保存路径", initialdir="./", filetypes=[('All Files', '*')],
-		                                defaultextension='json')
-		if file:
-			JsonWriter.JsonWriteWithListObj(file, self.dialog_list)
-			print("Json write success!")
-			file.close()
+		fp = filedialog.asksaveasfile(title="保存路径", initialdir="./", defaultextension='json',
+		                              filetypes=[('json文件', 'json'), ('All Files', '*')])
+		if fp:
+			with open(fp.name, 'w', encoding="UTF-8") as file:
+				if file:
+					JsonWriter.JsonWriteWithListObj(file, self.list_dialog)
+					print("Json write success!")
+					file.close()
+
+			if not fp.closed:
+				fp.close()
 
 	def Click_Load(self):
 		"""
 		从json文件中读取数据
 		"""
-		file = filedialog.askopenfile(title="保存路径", initialdir="./",
-		                              filetypes=[('json文件', 'json'), ('All Files', '*')])
-		if file:
-			self.dialog_list = JsonWriter.JsonLoadByFile(file)
-			file.close()
+		if messagebox.askokcancel("读取", "直接读取会丢失当前的文件,是否继续"):
+			fp = filedialog.askopenfile(title="保存路径", initialdir="./",
+			                            filetypes=[('json文件', 'json'), ('All Files', '*')])
+			if fp:
+				with open(fp.name, 'r', encoding='UTF-8') as file:
+					if file:
+						self.list_dialog = JsonWriter.JsonLoadByFile(file)
+						self.line_now = 1
+						self.line_total = self.list_dialog.__len__()
+						file.close()
+
+				if not fp.closed:
+					fp.close()
+
+			self.HistoryListUpdate()
 
 	def Click_Test(self):
 		"""
 		"""
-		for i in self.dialog_list:
-			print(i)
+
+	# self.line_now = self.listbox_history_slot.get(self.listbox_history_slot.curselection())[9]
+	# print(self.list_dialog[int(self.line_now)])
 
 	def Click_Next(self):
-		text = "当前第" + str(self.line_now) + "句,总共有" + str(self.line_total) + "句"
-		self.label_total["text"] = text
-		self.dialog_list.insert(self.line_now, self.Make_Dialog())
+		if self.line_now == self.line_total:
+			self.list_dialog.insert(self.line_now, self.Make_Dialog())
+		else:
+			self.list_dialog[self.line_now - 1] = self.Make_Dialog()
 
 		self.line_now += 1
 		if self.line_now > self.line_total:
 			self.line_total += 1
+
+		self.LabelTotalUpdate()
+		self.HistoryListUpdate()
+
+	def Click_Read(self):
+		"""跳转文本"""
+		if messagebox.askyesno("跳转", "直接跳转将会丢失当前的文本,是否继续"):
+			self.line_now = self.listbox_history_slot.curselection()[0] + 1
+			dialog: dict = self.list_dialog[self.line_now]
+
+			# 类型修改
+			self.combobox_dialog_type.set(dialog["Next"])
+
+			# 设置combobox内的文本
+			self.combobox_background_image.set("" if dialog["BackgroundImage"] == "None"
+			                                   else self.GetFileName(dialog["BackgroundImage"]))
+			self.combobox_left_image.set("" if dialog["左侧人物图像"] == "None"
+			                             else self.GetFileName(dialog["左侧人物图像"]))
+			self.combobox_mid_image.set("" if dialog["中间人物图像"] == "None"
+			                            else self.GetFileName(dialog["中间人物图像"]))
+			self.combobox_right_image.set("" if dialog["右侧人物图像"] == "None"
+			                              else self.GetFileName(dialog["右侧人物图像"]))
+			self.combobox_avatar_image.set("" if dialog["CharacterImage"] == "None"
+			                               else self.GetFileName(dialog["CharacterImage"]))
+
+			# 文本修改
+			self.entry_name.delete(0, 'end')
+			self.text_dialog.delete(1.0, 'end')
+			self.entry_name.insert(0, dialog["CharacterName"])
+			self.text_dialog.insert(1.0, dialog["DialogText"])
+
+			# 选择框修改
+			self.entry_choice1.delete(0, 'end')
+			self.entry_choice2.delete(0, 'end')
+			if dialog["选项"].__len__():
+				self.entry_choice1.insert(0, dialog["选项"][0])
+				self.entry_choice2.insert(0, dialog["选项"][1])
+
+			# 修改事件手动触发
+			self.LabelTotalUpdate()
+			self.DialogTypeChange()
+			self.B_ImageChange()
+			self.L_ImageChange()
+			self.M_ImageChange()
+			self.R_ImageChange()
+			self.A_ImageChange()
 
 	def Make_Dialog(self):
 		"""
@@ -194,7 +263,8 @@ class UIController:
 		dialog_struct["CharacterImage"] = self.ImageFileGet(4)
 
 		dialog_struct["CharacterName"] = self.entry_name.get()
-		dialog_struct["DialogText"] = self.text_dialog.get(1.0, 'end')
+		dialog_struct["DialogText"] = self.text_dialog.get(1.0, 'end').strip()
+		# todo DialogText读取出的文本最后有一个换行符,不知道有没有影响
 
 		if self.combobox_dialog_type.get() == '选项':
 			dialog_struct["选项"] = [self.entry_choice1.get(), self.entry_choice2.get()]
@@ -216,23 +286,27 @@ class UIController:
 			self.canvas_image.delete('a_image')
 			self.combobox_avatar_image['state'] = "disabled"
 
-	def DialogTypeChange(self, event):
+	def DialogTypeChange(self, event=None):
 		"""
 		"""
 		dialog_type = self.combobox_dialog_type.get()
-		if dialog_type == "继续对话":
+		if dialog_type == "继续对话" or dialog_type == "":
 			self.ComboboxStateSet('readonly')
+			self.entry_name["state"] = "normall"
 			self.ChoicePlaceForget()
 		elif dialog_type == "黑屏独白" or dialog_type == "结束对话":
 			self.ComboboxStateSet('disable')
+			self.entry_name.delete(0, 'end')
+			self.entry_name["state"] = "disable"
 			self.ChoicePlaceForget()
 			self.WidgetsContentClear()
 			self.AllImageClear()
 		else:
 			self.ComboboxStateSet('readonly')
+			self.entry_name["state"] = "normall"
 			self.ChoicePlace()
 
-	def B_ImageChange(self, event):
+	def B_ImageChange(self, event=None):
 		"""
 		:param event:
 		:return:
@@ -245,7 +319,7 @@ class UIController:
 		else:
 			self.canvas_image.delete('b_image')
 
-	def L_ImageChange(self, event):
+	def L_ImageChange(self, event=None):
 		"""
 		:param event:
 		:return:
@@ -258,7 +332,7 @@ class UIController:
 		else:
 			self.canvas_image.delete('l_image')
 
-	def M_ImageChange(self, event):
+	def M_ImageChange(self, event=None):
 		"""
 		:param event:
 		:return:
@@ -271,7 +345,7 @@ class UIController:
 		else:
 			self.canvas_image.delete('m_image')
 
-	def R_ImageChange(self, event):
+	def R_ImageChange(self, event=None):
 		"""
 		:param event:
 		:return:
@@ -284,7 +358,7 @@ class UIController:
 		else:
 			self.canvas_image.delete('r_image')
 
-	def A_ImageChange(self, event):
+	def A_ImageChange(self, event=None):
 		"""
 		:param event:
 		:return:
@@ -321,11 +395,21 @@ class UIController:
 		self.history_list.title("历史预览")
 		self.history_list.geometry("{0}x{1}+{2}+{3}".format(400, 600, 900, 100))
 
+		self.button_read = ttk.Button(self.history_list, text="Read", command=self.Click_Read)
 		self.button_save = ttk.Button(self.history_list, text="Save", command=self.Click_Save)  # 保存按钮
 		self.button_load = ttk.Button(self.history_list, text="Load", command=self.Click_Load)  # 读取按钮
+
+		self.listbox_history_slot = tkinter.Listbox(self.history_list)
+		self.scrollbar_history = ttk.Scrollbar(self.listbox_history_slot, )
+
 		# 放置history_list窗口控件
-		self.button_save.place(x=50, y=540, width=100, height=30)  # 保存按钮
-		self.button_load.place(x=250, y=540, width=100, height=30)  # 读取按钮
+		self.button_read.place(x=30, y=540, width=100, height=30)  # 跳转
+		self.button_save.place(x=150, y=540, width=100, height=30)  # 保存按钮
+		self.button_load.place(x=270, y=540, width=100, height=30)  # 读取按钮
+
+		self.listbox_history_slot.place(x=30, y=30, width=340, height=500)  # 列表框
+
+		self.HistoryListUpdate()
 
 	def ComboboxStateSet(self, state: str):
 		"""
@@ -377,8 +461,27 @@ class UIController:
 	def HistoryListUpdate(self):
 		"""
 		"""
-		for dialog in self.dialog_list:
-			pass
+		self.listbox_history_slot.delete(0, 'end')
+		for dialog in self.list_dialog:
+			self.listbox_history_slot.insert('end', self.DialogResample(dialog))
+
+	@staticmethod
+	def DialogResample(dialog):
+		"""
+		:param dialog:
+		:rtype: str
+		"""
+		index = dialog["Name"] + 1
+		text = dialog["DialogText"]
+		# b_image=self.FindFileName(dialog["BackgroundImage"])
+		return "Line:" + str(index) + " | Text:" + str(text)
+
+	@staticmethod
+	def GetFileName(file_path: str):
+		"""
+		:rtype: str
+		"""
+		return file_path[file_path.rfind("/") + 1:-1]
 
 
 def main():
