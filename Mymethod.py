@@ -24,6 +24,7 @@ def GetImageNameInFile(file_name: str):
 def TransImageFileToUE(image_name, index: int):
     """
     将输入的路径转换成UE的文件路径
+    todo 这个地方还没有和UE文件路径完成对照
 
     :param image_name: 输入的图片名,一般情况下的格式是 {图片名字}.png
     :param index: 根据index不同返回不同的文件路径
@@ -33,8 +34,8 @@ def TransImageFileToUE(image_name, index: int):
     if image_name == '':
         return "None"
     if index == 0:
-        return "Game\\DialogSystem\\BackgroundImage\\" + image_name
+        return "Texture2D\'Game/DialogSystem/BackgroundImage/{}\'".format(image_name)
     elif index == 1:
-        return "Game\\DialogSystem\\CharacterImage\\" + image_name
+        return "Texture2D\'Game/DialogSystem/CharacterImage/{}\'".format(image_name)
     else:
-        return "Game\\DialogSystem\\AvatarImage\\" + image_name
+        return "Texture2D\'Game/DialogSystem/AvatarImage/{}\'".format(image_name)
