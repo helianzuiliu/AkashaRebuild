@@ -24,7 +24,7 @@ def GetImageNameInFile(file_name: str):
 def TransImageFileToUE(image_name, index: int):
     """
     将输入的路径转换成UE的文件路径
-    todo 这个地方还没有和UE文件路径完成对照
+    todo 这个地方还没有和UE文件路径完成对照,目前只是写了个大概的路径
 
     :param image_name: 输入的图片名,一般情况下的格式是 {图片名字}.png
     :param index: 根据index不同返回不同的文件路径
