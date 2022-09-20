@@ -13,7 +13,7 @@ def GetImage(path, width, height):
     return ImageTk.PhotoImage(im)
 
 def GetThisDir():
-    return os.path.abspath("..")
+    return os.path.abspath("./")
 
 def GetImageNameInFile(file_name: str):
     """
