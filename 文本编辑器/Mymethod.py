@@ -8,34 +8,43 @@ import os.path
 from PIL import Image, ImageTk
 
 
-def GetImage(path, width, height):
-    im = Image.open(path).resize((width, height))
-    return ImageTk.PhotoImage(im)
+def GetImage(path: str, width, height):
+	if path[-4:] != ".png":
+		print(path)
+		path = path + ".png"
+		print(path)
+	im = Image.open(path).resize((width, height))
+	return ImageTk.PhotoImage(im)
+
 
 def GetThisDir():
-    return os.path.abspath("./")
+	return os.path.abspath("./")
+
 
 def GetImageNameInFile(file_name: str):
-    """
+	"""
     :rtype: list
     """
-    return os.listdir(GetThisDir() + "\\" + file_name)
+	return os.listdir(GetThisDir() + "\\" + file_name)
 
-def TransImageFileToUE(image_name, index: int):
-    """
+
+def TransImageFileToUE(image_name: str, index: int):
+	"""
     将输入的路径转换成UE的文件路径
-    todo 这个地方还没有和UE文件路径完成对照,目前只是写了个大概的路径
 
     :param image_name: 输入的图片名,一般情况下的格式是 {图片名字}.png
     :param index: 根据index不同返回不同的文件路径
     :return: 对应的UE文件
     :rtype: str
     """
-    if image_name == '':
-        return "None"
-    if index == 0:
-        return "Texture2D\'Game/DialogSystem/BackgroundImage/{}\'".format(image_name)
-    elif index == 1:
-        return "Texture2D\'Game/DialogSystem/CharacterImage/{}\'".format(image_name)
-    else:
-        return "Texture2D\'Game/DialogSystem/AvatarImage/{}\'".format(image_name)
+	if image_name == '':
+		return "None"
+
+	image_name = image_name[:image_name.rfind(".")]
+
+	if index == 0:
+		return "Texture2D\'Game/DialogSystem/BackgroundImage/{}.{}\'".format(image_name, image_name)
+	elif index == 1:
+		return "Texture2D\'Game/DialogSystem/CharacterImage/{}.{}\'".format(image_name, image_name)
+	else:
+		return "Texture2D\'Game/DialogSystem/AvatarImage/{}.{}\'".format(image_name, image_name)
