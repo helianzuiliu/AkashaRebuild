@@ -20,6 +20,7 @@ from tkinter import messagebox
 from JsonWriter import JsonWriter
 import Mymethod
 
+
 class UIController:
 	def __init__(self, master: tkinter.Tk, width, height):
 		"""
@@ -155,9 +156,10 @@ class UIController:
 		fp = filedialog.asksaveasfile(title="保存路径", initialdir="./", defaultextension='json',
 		                              filetypes=[('json文件', 'json'), ('All Files', '*')])
 		if fp:
+
 			with open(fp.name, 'w', encoding="UTF-8") as file:
 				if file:
-					JsonWriter.JsonWriteWithListObj(file, self.list_dialog)
+					JsonWriter.JsonWriteWithListObj(file, self.DialogImageNameChangeToUE())
 					print("Json write success!")
 					file.close()
 
@@ -174,7 +176,33 @@ class UIController:
 			if fp:
 				with open(fp.name, 'r', encoding='UTF-8') as file:
 					if file:
-						self.list_dialog = JsonWriter.JsonLoadByFile(file)
+						new_list = []
+						temp_list_dialog = JsonWriter.JsonLoadByFile(file)
+						for dialog in temp_list_dialog:
+							# 将ue文件转换成普通可用文件并导入
+							new_dict = JsonWriter.DialogStruct
+							new_dict["Name"] = dialog["Name"]
+							new_dict["DialogType"] = dialog["DialogType"]
+							new_dict["B_Image"] = dialog["B_Image"][
+							                      dialog["B_Image"].rfind("/") + 1:dialog["B_Image"].rfind(
+								                      ".")] + ".png"
+							new_dict["L_Image"] = dialog["L_Image"][
+							                      dialog["L_Image"].rfind("/") + 1:dialog["L_Image"].rfind(
+								                      ".")] + ".png"
+							new_dict["M_Image"] = dialog["M_Image"][
+							                      dialog["M_Image"].rfind("/") + 1:dialog["M_Image"].rfind(
+								                      ".")] + ".png"
+							new_dict["R_Image"] = dialog["R_Image"][
+							                      dialog["R_Image"].rfind("/") + 1:dialog["R_Image"].rfind(
+								                      ".")] + ".png"
+							new_dict["A_Image"] = dialog["A_Image"][
+							                      dialog["A_Image"].rfind("/") + 1:dialog["A_Image"].rfind(
+								                      ".")] + ".png"
+							new_dict["CharacterName"] = dialog["CharacterName"]
+							new_dict["Text"] = dialog["Text"]
+							new_dict["Choice"] = dialog["Choice"]
+							new_list.append(new_dict)
+						self.list_dialog = new_list
 						self.line_now = 1
 						self.line_total = self.list_dialog.__len__()
 						file.close()
@@ -211,32 +239,32 @@ class UIController:
 			dialog: dict = self.list_dialog[self.line_now]
 
 			# 类型修改
-			self.combobox_dialog_type.set(dialog["Next"])
+			self.combobox_dialog_type.set(dialog["DialogType"])
 
 			# 设置combobox内的文本
-			self.combobox_background_image.set("" if dialog["BackgroundImage"] == "None"
-			                                   else self.GetFileName(dialog["BackgroundImage"]))
-			self.combobox_left_image.set("" if dialog["左侧人物图像"] == "None"
-			                             else self.GetFileName(dialog["左侧人物图像"]))
-			self.combobox_mid_image.set("" if dialog["中间人物图像"] == "None"
-			                            else self.GetFileName(dialog["中间人物图像"]))
-			self.combobox_right_image.set("" if dialog["右侧人物图像"] == "None"
-			                              else self.GetFileName(dialog["右侧人物图像"]))
-			self.combobox_avatar_image.set("" if dialog["CharacterImage"] == "None"
-			                               else self.GetFileName(dialog["CharacterImage"]))
+			self.combobox_background_image.set("" if dialog["B_Image"] == "None"
+			                                   else dialog["B_Image"])
+			self.combobox_left_image.set("" if dialog["L_Image"] == "None"
+			                             else dialog["L_Image"])
+			self.combobox_mid_image.set("" if dialog["M_Image"] == "None"
+			                            else dialog["M_Image"])
+			self.combobox_right_image.set("" if dialog["R_Image"] == "None"
+			                              else dialog["R_Image"])
+			self.combobox_avatar_image.set("" if dialog["A_Image"] == "None"
+			                               else dialog["A_Image"])
 
 			# 文本修改
 			self.entry_name.delete(0, 'end')
 			self.text_dialog.delete(1.0, 'end')
 			self.entry_name.insert(0, dialog["CharacterName"])
-			self.text_dialog.insert(1.0, dialog["DialogText"])
+			self.text_dialog.insert(1.0, dialog["Text"])
 
 			# 选择框修改
 			self.entry_choice1.delete(0, 'end')
 			self.entry_choice2.delete(0, 'end')
-			if dialog["选项"].__len__():
-				self.entry_choice1.insert(0, dialog["选项"][0])
-				self.entry_choice2.insert(0, dialog["选项"][1])
+			if dialog["Choice"].__len__():
+				self.entry_choice1.insert(0, dialog["Choice"][0])
+				self.entry_choice2.insert(0, dialog["Choice"][1])
 
 			# 修改事件手动触发
 			self.LabelTotalUpdate()
@@ -254,22 +282,22 @@ class UIController:
 		"""
 		dialog_struct = JsonWriter.DialogStruct
 		dialog_struct["Name"] = self.line_now - 1
-		dialog_struct["Next"] = self.combobox_dialog_type.get()
+		dialog_struct["DialogType"] = self.combobox_dialog_type.get()
 
-		dialog_struct["BackgroundImage"] = self.ImageFileGet(0)
-		dialog_struct["左侧人物图像"] = self.ImageFileGet(1)
-		dialog_struct["中间人物图像"] = self.ImageFileGet(2)
-		dialog_struct["右侧人物图像"] = self.ImageFileGet(3)
-		dialog_struct["CharacterImage"] = self.ImageFileGet(4)
+		dialog_struct["B_Image"] = self.GetImageName(0)
+		dialog_struct["L_Image"] = self.GetImageName(1)
+		dialog_struct["M_Image"] = self.GetImageName(2)
+		dialog_struct["R_Image"] = self.GetImageName(3)
+		dialog_struct["A_Image"] = self.GetImageName(4)
 
 		dialog_struct["CharacterName"] = self.entry_name.get()
-		dialog_struct["DialogText"] = self.text_dialog.get(1.0, 'end').strip()
+		dialog_struct["Text"] = self.text_dialog.get(1.0, 'end').strip()
 		# todo DialogText读取出的文本最后有一个换行符,不知道有没有影响
 
 		if self.combobox_dialog_type.get() == '选项':
-			dialog_struct["选项"] = [self.entry_choice1.get(), self.entry_choice2.get()]
+			dialog_struct["Choice"] = [self.entry_choice1.get(), self.entry_choice2.get()]
 		else:
-			dialog_struct["选项"] = []
+			dialog_struct["Choice"] = []
 		return dict(dialog_struct)
 
 	def HaveAvatar(self):
@@ -371,21 +399,21 @@ class UIController:
 		else:
 			self.canvas_image.delete('a_image')
 
-	def ImageFileGet(self, index: int):
+	def GetImageName(self, index: int):
 		"""
 		:rtype: str
 		"""
 		if index == 0:
-			path = Mymethod.TransImageFileToUE(self.combobox_background_image.get(), 0)
+			image_name = self.combobox_background_image.get()
 		elif index == 1:
-			path = Mymethod.TransImageFileToUE(self.combobox_left_image.get(), 1)
+			image_name = self.combobox_left_image.get()
 		elif index == 2:
-			path = Mymethod.TransImageFileToUE(self.combobox_mid_image.get(), 1)
+			image_name = self.combobox_mid_image.get()
 		elif index == 3:
-			path = Mymethod.TransImageFileToUE(self.combobox_right_image.get(), 1)
+			image_name = self.combobox_right_image.get()
 		else:
-			path = Mymethod.TransImageFileToUE(self.combobox_avatar_image.get(), 2)
-		return path
+			image_name = self.combobox_avatar_image.get()
+		return image_name
 
 	def HistoryWindowCreate(self):
 		"""
@@ -400,7 +428,7 @@ class UIController:
 		self.button_load = ttk.Button(self.history_list, text="Load", command=self.Click_Load)  # 读取按钮
 
 		self.listbox_history_slot = tkinter.Listbox(self.history_list)
-		self.scrollbar_history = ttk.Scrollbar(self.listbox_history_slot, )
+		self.scrollbar_history = ttk.Scrollbar(self.listbox_history_slot)
 
 		# 放置history_list窗口控件
 		self.button_read.place(x=30, y=540, width=100, height=30)  # 跳转
@@ -472,16 +500,24 @@ class UIController:
 		:rtype: str
 		"""
 		index = dialog["Name"] + 1
-		text = dialog["DialogText"]
+		text = dialog["Text"]
 		# b_image=self.FindFileName(dialog["BackgroundImage"])
 		return "Line:" + str(index) + " | Text:" + str(text)
 
-	@staticmethod
-	def GetFileName(file_path: str):
+	def DialogImageNameChangeToUE(self):
 		"""
-		:rtype: str
+		:rtype: list
+		:return: 返回重新生成的可以对应UE的json文件
 		"""
-		return file_path[file_path.rfind("/") + 1:-1]
+		dialog_in_ue = []
+		for dialog in self.list_dialog:
+			dialog["B_Image"] = Mymethod.TransImageFileToUE(dialog["B_Image"], 0)
+			dialog["L_Image"] = Mymethod.TransImageFileToUE(dialog["L_Image"], 1)
+			dialog["M_Image"] = Mymethod.TransImageFileToUE(dialog["M_Image"], 1)
+			dialog["R_Image"] = Mymethod.TransImageFileToUE(dialog["R_Image"], 1)
+			dialog["A_Image"] = Mymethod.TransImageFileToUE(dialog["A_Image"], 2)
+			dialog_in_ue.append(dialog)
+		return dialog_in_ue
 
 
 def main():

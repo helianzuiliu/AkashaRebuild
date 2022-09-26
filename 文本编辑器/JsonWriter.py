@@ -19,15 +19,15 @@ import os.path
 class JsonWriter:
 	DialogStruct: dict = {
 		"Name": 0,
-		"Next": "继续对话",
-		"BackgroundImage": "None",
+		"DialogType": "继续对话",
+		"B_Image": "None",
+		"L_Image": "None",
+		"M_Image": "None",
+		"R_Image": "None",
+		"A_Image": "None",
 		"CharacterName": "None",
-		"CharacterImage": "None",
-		"DialogText": "",
-		"选项": [],
-		"左侧人物图像": "None",
-		"中间人物图像": "None",
-		"右侧人物图像": "None"
+		"Text": "",
+		"Choice": []
 	}
 
 	@staticmethod
