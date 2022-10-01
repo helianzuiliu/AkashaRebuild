@@ -18,7 +18,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 
 from JsonWriter import JsonWriter
-import Mymethod
+import MyMethod
 
 
 class UIController:
@@ -44,11 +44,11 @@ class UIController:
 		self.list_dialog = []
 
 		# 需要的所有图片资源
-		self.list_background: list = Mymethod.GetImageNameInFile("background")
+		self.list_background: list = MyMethod.GetImageNameInFile("BackgroundImage")
 		self.list_background.append("")
-		self.list_character: list = Mymethod.GetImageNameInFile("Image")
+		self.list_character: list = MyMethod.GetImageNameInFile("CharacterImage")
 		self.list_character.append("")
-		self.list_avatar: list = Mymethod.GetImageNameInFile("avatar")
+		self.list_avatar: list = MyMethod.GetImageNameInFile("AvatarImage")
 		self.list_avatar.append("")
 
 		# 所有使用的图片的引用
@@ -105,6 +105,7 @@ class UIController:
 		self.listbox_history_slot = tkinter.Listbox()  # 列表框
 		self.scrollbar_history = ttk.Scrollbar()  # 滚动条
 
+		self.combobox_dialog_type.set("继续对话")
 		self.EventBind()
 		self.WidgetsPlace()
 
@@ -201,7 +202,7 @@ class UIController:
 							new_dict["CharacterName"] = dialog["CharacterName"]
 							new_dict["Text"] = dialog["Text"]
 							new_dict["Choice"] = dialog["Choice"]
-							new_list.append(new_dict)
+							new_list.append(dict(new_dict))
 						self.list_dialog = new_list
 						self.line_now = 1
 						self.line_total = self.list_dialog.__len__()
@@ -341,8 +342,8 @@ class UIController:
 		:return:
 		"""
 		if self.combobox_background_image.get() != "":
-			image_path = Mymethod.GetThisDir() + "\\background\\" + self.combobox_background_image.get()
-			self.image_background = Mymethod.GetImage(image_path, self.width, self.height)
+			image_path = MyMethod.GetThisDir() + "\\BackgroundImage\\" + self.combobox_background_image.get()
+			self.image_background = MyMethod.GetImage(image_path, self.width, self.height)
 			self.canvas_image.delete("b_image")
 			self.canvas_image.create_image(0, 0, anchor="nw", image=self.image_background, tag="b_image")
 		else:
@@ -354,8 +355,8 @@ class UIController:
 		:return:
 		"""
 		if self.combobox_left_image.get() != "":
-			image_path = Mymethod.GetThisDir() + "\\image\\" + self.combobox_left_image.get()
-			self.image_left = Mymethod.GetImage(image_path, 768, 768)
+			image_path = MyMethod.GetThisDir() + "\\CharacterImage\\" + self.combobox_left_image.get()
+			self.image_left = MyMethod.GetImage(image_path, 768, 768)
 			self.canvas_image.delete("l_image")
 			self.canvas_image.create_image(-200, -100, anchor="nw", image=self.image_left, tag="l_image")
 		else:
@@ -367,8 +368,8 @@ class UIController:
 		:return:
 		"""
 		if self.combobox_mid_image.get() != "":
-			image_path = Mymethod.GetThisDir() + "\\image\\" + self.combobox_mid_image.get()
-			self.image_mid = Mymethod.GetImage(image_path, 768, 768)
+			image_path = MyMethod.GetThisDir() + "\\CharacterImage\\" + self.combobox_mid_image.get()
+			self.image_mid = MyMethod.GetImage(image_path, 768, 768)
 			self.canvas_image.delete("m_image")
 			self.canvas_image.create_image(150, -100, anchor="nw", image=self.image_mid, tag="m_image")
 		else:
@@ -380,8 +381,8 @@ class UIController:
 		:return:
 		"""
 		if self.combobox_right_image.get() != "":
-			image_path = Mymethod.GetThisDir() + "\\image\\" + self.combobox_right_image.get()
-			self.image_right = Mymethod.GetImage(image_path, 768, 768)
+			image_path = MyMethod.GetThisDir() + "\\CharacterImage\\" + self.combobox_right_image.get()
+			self.image_right = MyMethod.GetImage(image_path, 768, 768)
 			self.canvas_image.delete("r_image")
 			self.canvas_image.create_image(450, -100, anchor="nw", image=self.image_right, tag="r_image")
 		else:
@@ -393,8 +394,8 @@ class UIController:
 		:return:
 		"""
 		if self.combobox_avatar_image.get() != "":
-			image_path = Mymethod.GetThisDir() + "\\avatar\\" + self.combobox_avatar_image.get()
-			self.image_avatar = Mymethod.GetImage(image_path, 150, 200)
+			image_path = MyMethod.GetThisDir() + "\\AvatarImage\\" + self.combobox_avatar_image.get()
+			self.image_avatar = MyMethod.GetImage(image_path, 150, 200)
 			self.canvas_image.delete("a_image")
 			self.canvas_image.create_image(60, 320, anchor="nw", image=self.image_avatar, tag="a_image")
 		else:
@@ -512,11 +513,11 @@ class UIController:
 		"""
 		dialog_in_ue = []
 		for dialog in self.list_dialog:
-			dialog["B_Image"] = Mymethod.TransImageFileToUE(dialog["B_Image"], 0)
-			dialog["L_Image"] = Mymethod.TransImageFileToUE(dialog["L_Image"], 1)
-			dialog["M_Image"] = Mymethod.TransImageFileToUE(dialog["M_Image"], 1)
-			dialog["R_Image"] = Mymethod.TransImageFileToUE(dialog["R_Image"], 1)
-			dialog["A_Image"] = Mymethod.TransImageFileToUE(dialog["A_Image"], 2)
+			dialog["B_Image"] = MyMethod.TransImageFileToUE(dialog["B_Image"], 0)
+			dialog["L_Image"] = MyMethod.TransImageFileToUE(dialog["L_Image"], 1)
+			dialog["M_Image"] = MyMethod.TransImageFileToUE(dialog["M_Image"], 1)
+			dialog["R_Image"] = MyMethod.TransImageFileToUE(dialog["R_Image"], 1)
+			dialog["A_Image"] = MyMethod.TransImageFileToUE(dialog["A_Image"], 2)
 			dialog_in_ue.append(dialog)
 		return dialog_in_ue
 
