@@ -20,7 +20,6 @@ from tkinter import messagebox
 from JsonWriter import JsonWriter
 import MyMethod
 
-
 class UIController:
 	def __init__(self, master: tkinter.Tk, width, height):
 		"""
@@ -222,6 +221,7 @@ class UIController:
 	# print(self.list_dialog[int(self.line_now)])
 
 	def Click_Next(self):
+		# line_now的大小要小于等于line_total
 		if self.line_now == self.line_total:
 			self.list_dialog.insert(self.line_now, self.Make_Dialog())
 		else:
@@ -231,6 +231,11 @@ class UIController:
 		if self.line_now > self.line_total:
 			self.line_total += 1
 
+		# 如果当前行后面还有剧情,则修改成后面的剧情
+		if self.line_total > self.line_now:
+			...
+
+		# 更新统计数据
 		self.LabelTotalUpdate()
 		self.HistoryListUpdate()
 

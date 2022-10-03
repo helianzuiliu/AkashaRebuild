@@ -70,7 +70,7 @@ class JsonWriter:
 		:return:
 		:rtype: str
 		"""
-		# 这边没看懂出什么问题了,暂时不能用
+		# 这边没看懂出什么问题了,暂时不能用,反正项目也没用上
 		if type(obj) is str:
 			return json.loads(obj)
 		else:
