@@ -30,6 +30,12 @@ class JsonWriter:
 		"Choice": []
 	}
 
+	# 用于以后导入3D模型的动作 暂时没用
+	Character:dict={
+		"Mesh":"None",
+		"Animate":"none"
+	}
+
 	@staticmethod
 	def GetFilePath(file_name: str):
 		"""
