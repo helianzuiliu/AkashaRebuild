@@ -27,7 +27,14 @@ class JsonWriter:
 		"A_Image": "None",
 		"CharacterName": "None",
 		"Text": "",
-		"Choice": []
+		"Choice": [],
+		"SpecialEvent":{
+			"SpecialEventindex":{
+				"DataTable":"None",
+				"RowName":"None"
+			},
+			"DifferentWithPlayerSex":False
+		}
 	}
 
 	# 用于以后导入3D模型的动作 暂时没用

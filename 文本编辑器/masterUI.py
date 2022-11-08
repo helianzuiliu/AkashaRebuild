@@ -44,7 +44,7 @@ class UIController:
 		self.list_dialog = []
 		
 		# 需要的所有图片资源
-		self.list_background: list = MyMethod.GetImageNameInFile("BG_Image")
+		self.list_background: list = MyMethod.GetImageNameInFile("BGImage")
 		self.list_background.append("")
 		self.list_character: list = MyMethod.GetImageNameInFile("CharacterImage")
 		self.list_character.append("")
@@ -232,6 +232,9 @@ class UIController:
 		if self.line_total > self.line_now:
 			...  # todo 这还没写，太久没写都忘了要怎么写了
 		
+		# 清空Text
+		self.text_dialog.delete(1.0,'end')
+		
 		# 更新统计数据
 		self.LabelTotalUpdate()
 		self.HistoryListUpdate()
@@ -240,7 +243,7 @@ class UIController:
 		"""跳转文本"""
 		if messagebox.askyesno("跳转", "直接跳转将会丢失当前的文本,是否继续"):
 			self.line_now = self.listbox_history_slot.curselection()[0] + 1
-			dialog: dict = self.list_dialog[self.line_now]
+			dialog: dict = self.list_dialog[self.line_now-1]
 			
 			# 类型修改
 			self.combobox_dialog_type.set(dialog["DialogType"])
@@ -344,7 +347,7 @@ class UIController:
 		:return:
 		"""
 		if self.combobox_background_image.get() != "":
-			image_path = MyMethod.GetThisDir() + "\\BG_Image\\" + self.combobox_background_image.get()
+			image_path = MyMethod.GetThisDir() + "\\BGImage\\" + self.combobox_background_image.get()
 			self.image_background = MyMethod.GetImage(image_path, self.width, self.height)
 			self.canvas_image.delete("b_image")
 			self.canvas_image.create_image(0, 0, anchor="nw", image=self.image_background, tag="b_image")
