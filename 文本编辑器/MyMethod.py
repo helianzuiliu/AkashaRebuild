@@ -37,7 +37,7 @@ def TransImageFileToUE(image_name: str, index: int):
     :return: 对应的UE文件
     :rtype: str
     """
-	if image_name == '':
+	if image_name == '' or image_name=="None":
 		return "None"
 
 	image_name = image_name[:image_name.rfind(".")]

@@ -183,21 +183,42 @@ class UIController:
 							new_dict = JsonWriter.DialogStruct
 							new_dict["Name"] = dialog["Name"]
 							new_dict["DialogType"] = dialog["DialogType"]
-							new_dict["B_Image"] = dialog["B_Image"][
-							                      dialog["B_Image"].rfind("/") + 1:dialog["B_Image"].rfind(
-								                      ".")] + ".png"
-							new_dict["L_Image"] = dialog["L_Image"][
-							                      dialog["L_Image"].rfind("/") + 1:dialog["L_Image"].rfind(
-								                      ".")] + ".png"
-							new_dict["M_Image"] = dialog["M_Image"][
-							                      dialog["M_Image"].rfind("/") + 1:dialog["M_Image"].rfind(
-								                      ".")] + ".png"
-							new_dict["R_Image"] = dialog["R_Image"][
-							                      dialog["R_Image"].rfind("/") + 1:dialog["R_Image"].rfind(
-								                      ".")] + ".png"
-							new_dict["A_Image"] = dialog["A_Image"][
-							                      dialog["A_Image"].rfind("/") + 1:dialog["A_Image"].rfind(
-								                      ".")] + ".png"
+							
+							if dialog["B_Image"] != "None":
+								new_dict["B_Image"] = dialog["B_Image"][
+								                      dialog["B_Image"].rfind("/") + 1:dialog["B_Image"].rfind(
+									                      ".")] + ".png"
+							else:
+								new_dict["B_Image"]="None"
+								
+							if dialog["L_Image"] != "None":
+								new_dict["L_Image"] = dialog["L_Image"][
+								                      dialog["L_Image"].rfind("/") + 1:dialog["L_Image"].rfind(
+									                      ".")] + ".png"
+							else:
+								new_dict["L_Image"] = "None"
+								
+							if dialog["M_Image"] != "None":
+								new_dict["M_Image"] = dialog["M_Image"][
+								                      dialog["M_Image"].rfind("/") + 1:dialog["M_Image"].rfind(
+									                      ".")] + ".png"
+							else:
+								new_dict["M_Image"]="None"
+								
+							if dialog["R_Image"] != "None":
+								new_dict["R_Image"] = dialog["R_Image"][
+								                      dialog["R_Image"].rfind("/") + 1:dialog["R_Image"].rfind(
+									                      ".")] + ".png"
+							else:
+								new_dict["R_Image"]="None"
+								
+							if dialog["A_Image"] != "None":
+								new_dict["A_Image"] = dialog["A_Image"][
+								                      dialog["A_Image"].rfind("/") + 1:dialog["A_Image"].rfind(
+									                      ".")] + ".png"
+							else:
+								new_dict["A_Image"]="None"
+							
 							new_dict["CharacterName"] = dialog["CharacterName"]
 							new_dict["Text"] = dialog["Text"]
 							new_dict["Choice"] = dialog["Choice"]
@@ -233,7 +254,7 @@ class UIController:
 			...  # todo 这还没写，太久没写都忘了要怎么写了
 		
 		# 清空Text
-		self.text_dialog.delete(1.0,'end')
+		self.text_dialog.delete(1.0, 'end')
 		
 		# 更新统计数据
 		self.LabelTotalUpdate()
@@ -243,7 +264,7 @@ class UIController:
 		"""跳转文本"""
 		if messagebox.askyesno("跳转", "直接跳转将会丢失当前的文本,是否继续"):
 			self.line_now = self.listbox_history_slot.curselection()[0] + 1
-			dialog: dict = self.list_dialog[self.line_now-1]
+			dialog: dict = self.list_dialog[self.line_now - 1]
 			
 			# 类型修改
 			self.combobox_dialog_type.set(dialog["DialogType"])
@@ -525,17 +546,3 @@ class UIController:
 			dialog["A_Image"] = MyMethod.TransImageFileToUE(dialog["A_Image"], 2)
 			dialog_in_ue.append(dialog)
 		return dialog_in_ue
-
-
-def main():
-	master = tkinter.Tk()
-	
-	master.title("剧情文本编辑器")
-	
-	UIController(master, 960, 540)
-	
-	master.mainloop()
-
-
-if __name__ == '__main__':
-	main()
