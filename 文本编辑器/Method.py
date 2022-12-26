@@ -43,8 +43,8 @@ def TransImageFileToUE(image_name: str, index: int):
 	image_name = image_name[:image_name.rfind(".")]
 
 	if index == 0:
-		return "Texture2D\'/Game/Texture/BGImage/{}.{}\'".format(image_name, image_name)
+		return r"Script/Engine.Texture2D'/Game/Texture/BGImage/{}.{}'".format(image_name, image_name)
 	elif index == 1:
-		return "Texture2D\'/Game/Texture/CharacterImage/{}.{}\'".format(image_name, image_name)
+		return r"Script/Engine.Texture2D'/Game/Texture/CharacterImage/{}.{}'".format(image_name, image_name)
 	else:
-		return "Texture2D\'/Game/Texture/AvatarImage/{}.{}\'".format(image_name, image_name)
+		return r"Script/Engine.Texture2D'/Game/Texture/AvatarImage/{}.{}'".format(image_name, image_name)

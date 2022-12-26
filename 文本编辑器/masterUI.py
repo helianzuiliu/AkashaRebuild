@@ -18,7 +18,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 
 from JsonWriter import JsonWriter
-import MyMethod
+import Method as MyMethod
 
 
 class UIController:
